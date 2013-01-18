@@ -304,6 +304,11 @@ extern NSString * const AFNetworkingOperationFailingURLResponseErrorKey;
 extern NSString * const AFNetworkingOperationDidStartNotification;
 
 /**
+ Posted when an operation is about to finish.
+ */
+extern NSString * const AFNetworkingOperationWillFinishNotification;
+
+/**
  Posted when an operation finishes.
  */
 extern NSString * const AFNetworkingOperationDidFinishNotification;

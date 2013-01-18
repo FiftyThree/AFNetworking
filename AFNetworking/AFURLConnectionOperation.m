@@ -53,6 +53,7 @@ NSString * const AFNetworkingOperationFailingURLRequestErrorKey = @"AFNetworking
 NSString * const AFNetworkingOperationFailingURLResponseErrorKey = @"AFNetworkingOperationFailingURLResponseErrorKey";
 
 NSString * const AFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
+NSString * const AFNetworkingOperationWillFinishNotification = @"com.alamofire.networking.operation.willFinish";
 NSString * const AFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
 
 typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
@@ -331,6 +332,11 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         _state = state;
         [self didChangeValueForKey:oldStateKey];
         [self didChangeValueForKey:newStateKey];
+        
+        if (state == AFOperationFinishedState)
+        {
+            [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationWillFinishNotification object:self];
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             switch (state) {
