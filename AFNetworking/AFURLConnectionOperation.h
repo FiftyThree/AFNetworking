@@ -101,7 +101,7 @@
 /**
  The error, if any, that occurred in the lifecycle of the request.
  */
-@property (readonly, nonatomic, strong) NSError *error;
+@property (readonly, atomic, strong) NSError *error;
 
 ///----------------------------
 /// @name Getting Response Data
