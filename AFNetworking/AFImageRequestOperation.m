@@ -33,9 +33,9 @@ static dispatch_queue_t image_request_operation_processing_queue() {
 
 @interface AFImageRequestOperation ()
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-@property (readwrite, nonatomic, strong) UIImage *responseImage;
+@property (readwrite, atomic, strong) UIImage *responseImage;
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-@property (readwrite, nonatomic, strong) NSImage *responseImage;
+@property (readwrite, atomic, strong) NSImage *responseImage;
 #endif
 @end
 

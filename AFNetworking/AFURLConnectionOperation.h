@@ -110,7 +110,7 @@
 /**
  The data received during the request. 
  */
-@property (readonly, nonatomic, strong) NSData *responseData;
+@property (readonly, atomic, strong) NSData *responseData;
 
 /**
  The string representation of the response data.
