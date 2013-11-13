@@ -37,7 +37,7 @@ static dispatch_queue_t image_request_operation_processing_queue() {
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 @property (readwrite, atomic, strong) NSImage *responseImage;
 #endif
-@property (atomic, strong) NSLock *responseImageLock;
+@property (atomic, strong) NSObject *responseImageLock;
 @end
 
 @implementation AFImageRequestOperation
@@ -133,41 +133,55 @@ static dispatch_queue_t image_request_operation_processing_queue() {
 }
 #endif
 
+- (id)init {
+    self = [super init];
+    if (!self) {
+		return nil;
+    }
+
+    self.responseImageLock = [[NSObject alloc] init];
+
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+    self.imageScale = [[UIScreen mainScreen] scale];
+#endif
+
+    return self;
+}
+
 - (id)initWithRequest:(NSURLRequest *)urlRequest {
     self = [super initWithRequest:urlRequest];
     if (!self) {
         return nil;
     }
-        
+
+    self.responseImageLock = [[NSObject alloc] init];
+
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     self.imageScale = [[UIScreen mainScreen] scale];
 #endif
-    
+
     return self;
 }
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 - (void)setResponseImage:(UIImage *)responseImage {
-    [self.responseImageLock lock];
-
-    _responseImage = responseImage;
-    
-    [self.responseImageLock unlock];
+    @synchronized(self.responseImageLock)
+    {
+        _responseImage = responseImage;
+    }
 }
 
 - (UIImage *)responseImage {
-    [self.responseImageLock lock];
-    if (!_responseImage && [self.responseData length] > 0 && [self isFinished]) {
-        UIImage *image = [UIImage imageWithData:self.responseData];
+    @synchronized(self.responseImageLock)
+    {
+        if (!_responseImage && [self.responseData length] > 0 && [self isFinished]) {
+            UIImage *image = [UIImage imageWithData:self.responseData];
+            
+            _responseImage = [UIImage imageWithCGImage:[image CGImage] scale:self.imageScale orientation:image.imageOrientation];
+        }
         
-        _responseImage = [UIImage imageWithCGImage:[image CGImage] scale:self.imageScale orientation:image.imageOrientation];
+        return _responseImage;
     }
-
-    UIImage *result = _responseImage;
-    
-    [self.responseImageLock unlock];
-
-    return result;
 }
 
 - (void)setImageScale:(CGFloat)imageScale {
@@ -185,28 +199,23 @@ static dispatch_queue_t image_request_operation_processing_queue() {
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 
 - (void)setResponseImage:(NSImage *)responseImage {
-    [self.responseImageLock lock];
-    
-    _responseImage = responseImage;
-    
-    [self.responseImageLock unlock];
+    @synchronized(self.responseImageLock)
+    {
+        _responseImage = responseImage;
+    }
 }
 
 - (NSImage *)responseImage {
-    [self.responseImageLock lock];
-    
-    if (!_responseImage && [self.responseData length] > 0 && [self isFinished]) {
-        // Ensure that the image is set to it's correct pixel width and height
-        NSBitmapImageRep *bitimage = [[NSBitmapImageRep alloc] initWithData:self.responseData];
-        _responseImage = [[NSImage alloc] initWithSize:NSMakeSize([bitimage pixelsWide], [bitimage pixelsHigh])];
-        [_responseImage addRepresentation:bitimage];
+    @synchronized(self.responseImageLock)
+    {
+        if (!_responseImage && [self.responseData length] > 0 && [self isFinished]) {
+            // Ensure that the image is set to it's correct pixel width and height
+            NSBitmapImageRep *bitimage = [[NSBitmapImageRep alloc] initWithData:self.responseData];
+            _responseImage = [[NSImage alloc] initWithSize:NSMakeSize([bitimage pixelsWide], [bitimage pixelsHigh])];
+            [_responseImage addRepresentation:bitimage];
+        }
+        return _responseImage;
     }
-    
-    NSImage *result = _responseImage;
-    
-    [self.responseImageLock unlock];
-    
-    return result;
 }
 #endif
 
