@@ -327,16 +327,17 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         NSString *oldStateKey = AFKeyPathFromOperationState(self.state);
         NSString *newStateKey = AFKeyPathFromOperationState(state);
         
+        if (state == AFOperationFinishedState)
+        {
+            [self operationWillFinish];
+            [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationWillFinishNotification object:self];
+        }
+        
         [self willChangeValueForKey:newStateKey];
         [self willChangeValueForKey:oldStateKey];
         _state = state;
         [self didChangeValueForKey:oldStateKey];
         [self didChangeValueForKey:newStateKey];
-        
-        if (state == AFOperationFinishedState)
-        {
-            [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationWillFinishNotification object:self];
-        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             switch (state) {
@@ -462,6 +463,9 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         [self.connection start];  
     }
     [self.lock unlock];
+}
+
+- (void)operationWillFinish {
 }
 
 - (void)finish {
