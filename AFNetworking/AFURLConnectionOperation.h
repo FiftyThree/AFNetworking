@@ -257,6 +257,8 @@
  */
 - (void)setCacheResponseBlock:(NSCachedURLResponse * (^)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse))block;
 
+- (void)operationWillFinish;
+
 @end
 
 ///----------------
