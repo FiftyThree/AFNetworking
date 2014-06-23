@@ -56,7 +56,6 @@
 }
 
 - (NSError *)error {
-    NSAssert(self.isFinished, @"Operation must be finished");
     if (_JSONError) {
         return _JSONError;
     } else {
