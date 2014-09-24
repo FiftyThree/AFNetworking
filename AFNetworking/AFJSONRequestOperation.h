@@ -54,7 +54,7 @@
 /**
  This is a hook that will allow you to add a callback to do more processing work on the JSON object once it has been initialized
  */
-@property (readwrite, nonatomic, strong) void (^processBlock)(id);
+@property (copy, nonatomic) void (^processBlock)(id);
  
 ///----------------------------------
 /// @name Creating Request Operations

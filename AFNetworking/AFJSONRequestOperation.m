@@ -76,7 +76,7 @@
             // See http://stackoverflow.com/a/12843465/157142
             NSData *JSONData = [self.responseString dataUsingEncoding:self.responseStringEncoding];
             self.responseJSON = [NSJSONSerialization JSONObjectWithData:JSONData options:self.JSONReadingOptions error:&error];
-            if (self.processBlock != nil)
+            if (self.processBlock)
             {
                 self.processBlock(_responseJSON);
             }
