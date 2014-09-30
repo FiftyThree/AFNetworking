@@ -50,6 +50,11 @@
  Options for reading the response JSON data and creating the Foundation objects. For possible values, see the `NSJSONSerialization` documentation section "NSJSONReadingOptions".
  */
 @property (nonatomic, assign) NSJSONReadingOptions JSONReadingOptions;
+
+/**
+ This is a hook that will allow you to add a callback to do more processing work on the JSON object once it has been initialized
+ */
+@property (copy, nonatomic) void (^processBlock)(id);
  
 ///----------------------------------
 /// @name Creating Request Operations
