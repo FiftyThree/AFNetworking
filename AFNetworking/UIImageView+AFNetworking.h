@@ -40,7 +40,7 @@
  
  @param url The URL used for the image request.
  */
-- (void)setImageWithURL:(NSURL *)url;
+- (void)setImageWithURL:(NSURL *)url imageScale:(CGFloat)imageScale;
 
 /**
  Creates and enqueues an image request operation, which asynchronously downloads the image from the specified URL. Any previous image request for the receiver will be cancelled. If the image is cached locally, the image is set immediately, otherwise the specified placeholder image will be set immediately, and then the remote image will be set once the request is finished.
@@ -50,7 +50,8 @@
  
  @discussion By default, URL requests have a cache policy of `NSURLCacheStorageAllowed` and a timeout interval of 30 seconds, and are set not handle cookies. To configure URL requests differently, use `setImageWithURLRequest:placeholderImage:success:failure:`
 */
-- (void)setImageWithURL:(NSURL *)url 
+- (void)setImageWithURL:(NSURL *)url
+             imageScale:(CGFloat)imageScale
        placeholderImage:(UIImage *)placeholderImage;
 
 /**
@@ -63,7 +64,8 @@
  
  @discussion If a success block is specified, it is the responsibility of the block to set the image of the image view before returning. If no success block is specified, the default behavior of setting the image with `self.image = image` is executed.
 */
-- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest 
+- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
+                    imageScale:(CGFloat)imageScale
               placeholderImage:(UIImage *)placeholderImage 
                        success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
                        failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failure;

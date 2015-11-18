@@ -79,21 +79,23 @@ static char kAFImageRequestOperationObjectKey;
 
 #pragma mark -
 
-- (void)setImageWithURL:(NSURL *)url {
-    [self setImageWithURL:url placeholderImage:nil];
+- (void)setImageWithURL:(NSURL *)url imageScale:(CGFloat)imageScale {
+    [self setImageWithURL:url imageScale:imageScale placeholderImage:nil];
 }
 
-- (void)setImageWithURL:(NSURL *)url 
+- (void)setImageWithURL:(NSURL *)url
+             imageScale:(CGFloat)imageScale
        placeholderImage:(UIImage *)placeholderImage
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPShouldHandleCookies:NO];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     
-    [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
+    [self setImageWithURLRequest:request imageScale:imageScale placeholderImage:placeholderImage success:nil failure:nil];
 }
 
-- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest 
+- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
+                    imageScale:(CGFloat)imageScale
               placeholderImage:(UIImage *)placeholderImage 
                        success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
                        failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failure
@@ -112,6 +114,7 @@ static char kAFImageRequestOperationObjectKey;
         self.image = placeholderImage;
         
         AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
+        requestOperation.imageScale = imageScale;
         [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             if ([[urlRequest URL] isEqual:[[self.af_imageRequestOperation request] URL]]) {
                 if (success) {
